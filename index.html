@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Tracker | Notion-style</title>
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Boxicons for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Theme Toggle -->
+    <button id="theme-toggle-btn" class="theme-toggle-btn" title="Toggle Theme">
+        <i class='bx bx-moon' id="theme-icon"></i>
+    </button>
+
+    <div id="app-container">
+        <!-- Sidebar / Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class='bx bx-book-reader logo-icon'></i>
+                <h1>Study Tracker</h1>
+            </div>
+
+            <div class="sidebar-scroll-area">
+                <ul class="nav-links">
+                    <li class="nav-item active" id="nav-dashboard">
+                        <i class='bx bx-home-alt'></i>
+                        <span>Dashboard</span>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">SUBJECTS</div>
+                    <ul class="nav-links" id="sidebar-subjects-list">
+                        <!-- Sidebar subject links rendered here -->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <section id="dashboard-view" class="view active">
+                <header class="view-header">
+                    <h2>Your Subjects</h2>
+                    <button class="btn primary-btn" id="add-subject-btn">
+                        <i class='bx bx-plus'></i> New Subject
+                    </button>
+                </header>
+                <div class="subjects-grid" id="subjects-grid">
+                    <!-- Subject cards will be rendered here -->
+                </div>
+            </section>
+
+            <!-- Subject Details View -->
+            <section id="subject-view" class="view hidden">
+                <header class="view-header subject-header">
+                    <div class="header-left">
+                        <button class="btn icon-btn" id="back-btn" title="Back to Dashboard">
+                            <i class='bx bx-arrow-back'></i>
+                        </button>
+                        <h2 id="current-subject-title" class="editable-title" contenteditable="false">Subject Name</h2>
+                        <button class="btn icon-btn small-btn" id="edit-subject-title-btn" title="Edit Name">
+                            <i class='bx bx-edit-alt'></i>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="subject-progress-container">
+                    <div class="progress-info">
+                        <span class="progress-text">Course Progress</span>
+                        <span class="progress-percentage" id="subject-progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="subject-progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="weeks-container" id="weeks-container">
+                    <!-- 16 weeks will be rendered here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay hidden" id="add-subject-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Subject</h3>
+                <button class="btn icon-btn close-modal-btn"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="new-subject-input" class="text-input"
+                    placeholder="e.g., Machine Learning, Data Structures" autocomplete="off">
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary-btn close-modal-btn">Cancel</button>
+                <button class="btn primary-btn" id="confirm-add-subject-btn">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="delete-confirm-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Delete Subject?</h3>
+                <button class="btn icon-btn close-delete-modal-btn"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this subject? All tasks and progress will be lost permanently.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary-btn close-delete-modal-btn">Cancel</button>
+                <button class="btn danger-btn" id="confirm-delete-subject-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="sidebar-subject-item-template">
+        <li class="nav-item sidebar-subject-item">
+            <i class='bx bx-book'></i>
+            <span class="subject-name">Subject Title</span>
+        </li>
+    </template>
+
+    <template id="subject-card-template">
+        <div class="subject-card">
+            <div class="card-header">
+                <h3 class="card-title"></h3>
+                <div class="card-actions">
+                    <button class="btn icon-btn delete-subject-btn" title="Delete Subject">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="progress-info">
+                    <span class="weeks-completed-text">0 / 16 weeks</span>
+                    <span class="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar-bg small">
+                    <div class="progress-bar-fill small"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="week-block-template">
+        <div class="week-block">
+            <div class="week-header">
+                <div class="week-header-left">
+                    <button class="btn icon-btn toggle-collapse-btn">
+                        <i class='bx bx-chevron-down drop-icon'></i>
+                    </button>
+                    <label class="custom-checkbox week-completer">
+                        <input type="checkbox" class="week-checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                    <h3 class="week-title">Week 1</h3>
+                </div>
+                <span class="task-count">0 tasks</span>
+            </div>
+            <div class="week-body collapsible">
+                <div class="tasks-list">
+                    <!-- Tasks here -->
+                </div>
+                <div class="add-task-container">
+                    <button class="btn ghost-btn add-task-btn"><i class='bx bx-plus'></i> Add a task</button>
+                    <div class="add-task-form hidden">
+                        <input type="text" class="task-input text-input small" placeholder="What needs to be done?">
+                        <div class="task-form-actions">
+                            <button class="btn primary-btn small-btn save-task-btn">Save</button>
+                            <button class="btn secondary-btn small-btn cancel-task-btn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="task-item-template">
+        <div class="task-item">
+            <label class="custom-checkbox">
+                <input type="checkbox" class="task-checkbox">
+                <span class="checkmark"></span>
+            </label>
+            <span class="task-text"></span>
+            <input type="text" class="task-edit-input hidden text-input small">
+            <div class="task-actions">
+                <button class="btn icon-btn edit-task-btn" title="Edit Task"><i class='bx bx-edit-alt'></i></button>
+                <button class="btn icon-btn delete-task-btn" title="Delete Task"><i class='bx bx-trash'></i></button>
+            </div>
+        </div>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
