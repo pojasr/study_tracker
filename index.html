@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Tracker | POJ</title>
+    <!-- Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Boxicons for icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="app-container">
+        <!-- Sidebar / Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <i class='bx bx-book-reader logo-icon'></i>
+                <h1>Study Tracker | POJ</h1>
+            </div>
+
+            <div class="sidebar-scroll-area">
+                <ul class="nav-links">
+                    <li class="nav-item active" id="nav-dashboard">
+                        <i class='bx bx-home-alt'></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li class="nav-item" id="nav-daily-habits">
+                        <i class='bx bx-check-square'></i>
+                        <span>Daily Habits</span>
+                    </li>
+                    <li class="nav-item" id="nav-daily-routine">
+                        <i class='bx bx-calendar-check'></i>
+                        <span>Daily Routine</span>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">SUBJECTS</div>
+                    <ul class="nav-links" id="sidebar-subjects-list">
+                        <!-- Sidebar subject links rendered here -->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <section id="dashboard-view" class="view active">
+                <header class="view-header">
+                    <h2>Your Subjects</h2>
+                    <button class="btn primary-btn" id="add-subject-btn">
+                        <i class='bx bx-plus'></i> New Subject
+                    </button>
+                </header>
+                <div class="subjects-grid" id="subjects-grid">
+                    <!-- Subject cards will be rendered here -->
+                </div>
+            </section>
+
+            <!-- Subject Details View -->
+            <section id="subject-view" class="view hidden">
+                <header class="view-header subject-header">
+                    <div class="header-left">
+                        <button class="btn icon-btn" id="back-btn" title="Back to Dashboard">
+                            <i class='bx bx-arrow-back'></i>
+                        </button>
+                        <h2 id="current-subject-title" class="editable-title" contenteditable="false">Subject Name</h2>
+                        <button class="btn icon-btn small-btn" id="edit-subject-title-btn" title="Edit Name">
+                            <i class='bx bx-edit-alt'></i>
+                        </button>
+                    </div>
+                </header>
+
+                <div class="subject-progress-container">
+                    <div class="progress-info">
+                        <span class="progress-text">Course Progress</span>
+                        <span class="progress-percentage" id="subject-progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="subject-progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="weeks-container" id="weeks-container">
+                    <!-- 16 weeks will be rendered here -->
+                </div>
+            </section>
+
+            <!-- Daily Habits View -->
+            <section id="daily-habits-view" class="view hidden">
+                <header class="view-header date-nav-header">
+                    <h2>Daily Habits</h2>
+                    <div class="date-navigation">
+                        <button class="btn icon-btn" id="habits-prev-day" title="Previous Day"><i
+                                class='bx bx-chevron-left'></i></button>
+                        <div class="current-date-display">
+                            <span id="habits-date-display">Today</span>
+                            <button class="btn ghost-btn small-btn" id="habits-today-btn"
+                                style="padding: 2px 8px; font-size: 12px; margin-left: 8px;">Today</button>
+                        </div>
+                        <button class="btn icon-btn" id="habits-next-day" title="Next Day"><i
+                                class='bx bx-chevron-right'></i></button>
+                    </div>
+                </header>
+
+                <div class="progress-info" style="margin-bottom: 24px;">
+                    <span id="habits-summary-text">0 of 0 habits completed today</span>
+                </div>
+
+                <div class="habits-grid" id="habits-grid" style="display: grid; gap: 12px; margin-bottom: 32px;">
+                    <!-- Habits rendered here -->
+                </div>
+
+                <div class="add-task-container" style="padding: 0;">
+                    <button class="btn ghost-btn" id="add-habit-btn" style="padding-left: 0;"><i class='bx bx-plus'></i>
+                        Add a new habit</button>
+                    <div class="add-task-form hidden" id="add-habit-form" style="margin-top:0;">
+                        <input type="text" id="habit-input" class="task-input text-input"
+                            placeholder="e.g., Read 10 pages, Meditate">
+                        <div class="task-form-actions" style="margin-top: 8px;">
+                            <button class="btn primary-btn small-btn" id="save-habit-btn">Save Content</button>
+                            <button class="btn secondary-btn small-btn" id="cancel-habit-btn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Habit Tracker Grid (Hidden by default, shown when a habit is selected) -->
+                <div id="habit-tracker-container" class="habit-tracker-container hidden">
+                    <div class="tracker-header" style="align-items: flex-start;">
+                        <div>
+                            <h3 id="tracker-habit-name">Habit Name</h3>
+                            <p id="tracker-habit-stats"
+                                style="font-size: 13px; color: var(--text-secondary); margin-top: 4px; font-weight: 500;">
+                            </p>
+                        </div>
+                        <button class="btn icon-btn" id="close-tracker-btn" title="Close Tracker"><i
+                                class='bx bx-x'></i></button>
+                    </div>
+                    <div class="tracker-grid-wrapper">
+                        <div class="tracker-grid" id="tracker-grid">
+                            <!-- 52x7 grid cells generated mostly by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Daily Routine View -->
+            <section id="daily-routine-view" class="view hidden">
+                <header class="view-header date-nav-header">
+                    <h2>Daily Routine</h2>
+                    <div class="date-navigation">
+                        <button class="btn icon-btn" id="routine-prev-day" title="Previous Day"><i
+                                class='bx bx-chevron-left'></i></button>
+                        <div class="current-date-display">
+                            <span id="routine-date-display">Today</span>
+                            <button class="btn ghost-btn small-btn" id="routine-today-btn"
+                                style="padding: 2px 8px; font-size: 12px; margin-left: 8px;">Today</button>
+                        </div>
+                        <button class="btn icon-btn" id="routine-next-day" title="Next Day"><i
+                                class='bx bx-chevron-right'></i></button>
+                    </div>
+                </header>
+                <div class="week-block" style="border-color: transparent; background: transparent;">
+                    <div class="week-body collapsible">
+                        <div class="tasks-list" id="routine-tasks-list" style="padding: 0;">
+                            <!-- Routine tasks here -->
+                        </div>
+                        <div class="add-task-container" style="padding: 16px 0;">
+                            <button class="btn ghost-btn" id="add-routine-task-btn" style="padding-left: 0;"><i
+                                    class='bx bx-plus'></i> Add a routine task</button>
+                            <div class="add-task-form hidden" id="add-routine-form">
+                                <input type="text" id="routine-task-input" class="task-input text-input small"
+                                    placeholder="What's your daily routine?">
+                                <div class="task-form-actions">
+                                    <button class="btn primary-btn small-btn" id="save-routine-btn">Save</button>
+                                    <button class="btn secondary-btn small-btn" id="cancel-routine-btn">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay hidden" id="add-subject-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Subject</h3>
+                <button class="btn icon-btn close-modal-btn"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="modal-body">
+                <label
+                    style="display:block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary); font-weight: 500;">Subject
+                    Name</label>
+                <input type="text" id="new-subject-input" class="text-input"
+                    placeholder="e.g., Machine Learning, Data Structures" autocomplete="off"
+                    style="margin-bottom: 16px;">
+
+                <label
+                    style="display:block; margin-bottom: 8px; font-size: 13px; color: var(--text-secondary); font-weight: 500;">Duration</label>
+                <div class="radio-group" style="display: flex; gap: 16px; margin-bottom: 12px;">
+                    <label class="radio-item"
+                        style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
+                        <input type="radio" name="subject-duration" value="auto" checked>
+                        <span>Standard 16 Weeks</span>
+                    </label>
+                    <label class="radio-item"
+                        style="display: flex; align-items: center; gap: 8px; font-size: 14px; cursor: pointer;">
+                        <input type="radio" name="subject-duration" value="custom">
+                        <span>Custom Duration</span>
+                    </label>
+                </div>
+
+                <div id="custom-weeks-container" class="hidden">
+                    <input type="number" id="custom-weeks-input" class="text-input small"
+                        placeholder="Number of weeks (e.g., 8)" min="1" style="width: 100%;">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary-btn close-modal-btn">Cancel</button>
+                <button class="btn primary-btn" id="confirm-add-subject-btn">Create</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden" id="delete-confirm-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Delete Subject?</h3>
+                <button class="btn icon-btn close-delete-modal-btn"><i class='bx bx-x'></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this subject? All tasks and progress will be lost permanently.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn secondary-btn close-delete-modal-btn">Cancel</button>
+                <button class="btn danger-btn" id="confirm-delete-subject-btn">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Templates -->
+    <template id="sidebar-subject-item-template">
+        <li class="nav-item sidebar-subject-item">
+            <i class='bx bx-book'></i>
+            <span class="subject-name">Subject Title</span>
+        </li>
+    </template>
+
+    <template id="subject-card-template">
+        <div class="subject-card">
+            <div class="card-header">
+                <h3 class="card-title"></h3>
+                <div class="card-actions">
+                    <button class="btn icon-btn delete-subject-btn" title="Delete Subject">
+                        <i class='bx bx-trash'></i>
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="progress-info">
+                    <span class="weeks-completed-text">0 / 16 weeks</span>
+                    <span class="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar-bg small">
+                    <div class="progress-bar-fill small"></div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="week-block-template">
+        <div class="week-block">
+            <div class="week-header">
+                <div class="week-header-left">
+                    <button class="btn icon-btn toggle-collapse-btn">
+                        <i class='bx bx-chevron-down drop-icon'></i>
+                    </button>
+                    <label class="custom-checkbox week-completer">
+                        <input type="checkbox" class="week-checkbox">
+                        <span class="checkmark"></span>
+                    </label>
+                    <h3 class="week-title">Week 1</h3>
+                </div>
+                <span class="task-count">0 tasks</span>
+            </div>
+            <div class="week-body collapsible">
+                <div class="tasks-list">
+                    <!-- Tasks here -->
+                </div>
+                <div class="add-task-container">
+                    <button class="btn ghost-btn add-task-btn"><i class='bx bx-plus'></i> Add a task</button>
+                    <div class="add-task-form hidden">
+                        <input type="text" class="task-input text-input small" placeholder="What needs to be done?">
+                        <div class="task-form-actions">
+                            <button class="btn primary-btn small-btn save-task-btn">Save</button>
+                            <button class="btn secondary-btn small-btn cancel-task-btn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="task-item-template">
+        <div class="task-item">
+            <label class="custom-checkbox">
+                <input type="checkbox" class="task-checkbox">
+                <span class="checkmark"></span>
+            </label>
+            <span class="task-text"></span>
+            <input type="text" class="task-edit-input hidden text-input small">
+            <div class="task-actions">
+                <button class="btn icon-btn edit-task-btn" title="Edit Task"><i class='bx bx-edit-alt'></i></button>
+                <button class="btn icon-btn delete-task-btn" title="Delete Task"><i class='bx bx-trash'></i></button>
+            </div>
+        </div>
+    </template>
+
+    <template id="habit-card-template">
+        <div class="habit-card">
+            <div class="habit-content">
+                <div class="habit-icon-circle"><i class='bx bx-check'></i></div>
+                <span class="habit-text"></span>
+            </div>
+            <div class="task-actions habit-actions">
+                <button class="btn icon-btn delete-habit-btn" title="Delete Habit"><i class='bx bx-trash'></i></button>
+            </div>
+        </div>
+    </template>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
